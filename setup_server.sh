@@ -47,6 +47,14 @@ import threading
 
 PORT = 8080
 
+# --- SECURITY: Serve from public directory ---
+WEB_DIR = "public"
+if not os.path.exists(WEB_DIR):
+    os.makedirs(WEB_DIR)
+
+# Change working directory to public so SimpleHTTPRequestHandler serves it
+os.chdir(WEB_DIR)
+
 def get_cpu_usage():
     try:
         with open("/proc/stat", "r") as f:
@@ -163,7 +171,7 @@ class SpeedTestHandler(http.server.SimpleHTTPRequestHandler):
 
 Handler = SpeedTestHandler
 
-print(f"Serving HTTP on 0.0.0.0 port {PORT} ...")
+print(f"Serving HTTP on 0.0.0.0 port {PORT} from directory {os.getcwd()} ...")
 print("Features: System Monitor (/api/stats), Speed Test (garbage.dat, /upload)")
 
 # Use ThreadingTCPServer for concurrent requests
@@ -194,6 +202,10 @@ RESET='\033[0m'
 
 TOKEN_FILE="token.txt"
 LOG_FILE="cloudflare.log"
+WEB_DIR="public"
+
+# Ensure public dir exists
+mkdir -p "$WEB_DIR"
 
 # --- HELPER UI ---
 draw_border() {
@@ -233,7 +245,7 @@ cek_status() {
 }
 
 create_template() {
-    if [[ -f "index.html" ]]; then
+    if [[ -f "$WEB_DIR/index.html" ]]; then
         echo -e "${Y}[!] File index.html sudah ada.${RESET}"
         read -p " Timpa file? (y/n): " CONFIRM
         if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
@@ -244,7 +256,7 @@ create_template() {
     echo -e "${Y}[*] Membuat Template Modern...${RESET}"
 
     # HTML
-    cat > index.html << 'EOF_HTML'
+    cat > "$WEB_DIR/index.html" << 'EOF_HTML'
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -270,7 +282,7 @@ create_template() {
 EOF_HTML
 
     # CSS
-    cat > style.css << 'EOF_CSS'
+    cat > "$WEB_DIR/style.css" << 'EOF_CSS'
 :root {
     --bg-color: #0f0c29;
     --card-bg: rgba(255, 255, 255, 0.1);
@@ -334,7 +346,7 @@ button:hover {
 EOF_CSS
 
     # JS
-    cat > script.js << 'EOF_JS'
+    cat > "$WEB_DIR/script.js" << 'EOF_JS'
 function showAlert() {
     alert("Halo! Script JS berhasil berjalan dengan lancar!");
     console.log("Termux Server is Running...");
@@ -353,7 +365,7 @@ create_speedtest() {
     fi
     echo -e "${G}[✓] Paket selesai.${RESET}"
 
-    if [[ -f "index.html" ]]; then
+    if [[ -f "$WEB_DIR/index.html" ]]; then
         echo -e "${Y}[!] File index.html sudah ada.${RESET}"
         read -p " Timpa file? (y/n): " CONFIRM
         if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
@@ -365,7 +377,7 @@ create_speedtest() {
     echo -e "${Y}[*] Membuat Template Speed Test Mewah...${RESET}"
 
     # HTML SPEEDTEST
-    cat > index.html << 'EOF_HTML'
+    cat > "$WEB_DIR/index.html" << 'EOF_HTML'
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -418,7 +430,7 @@ create_speedtest() {
 EOF_HTML
 
     # CSS SPEEDTEST
-    cat > style.css << 'EOF_CSS'
+    cat > "$WEB_DIR/style.css" << 'EOF_CSS'
 :root {
     --bg-dark: #050510;
     --neon-cyan: #00f3ff;
@@ -554,7 +566,7 @@ button:hover {
 EOF_CSS
 
     # JS SPEEDTEST
-    cat > script.js << 'EOF_JS'
+    cat > "$WEB_DIR/script.js" << 'EOF_JS'
 async function startTest() {
     const btn = document.getElementById('startBtn');
     const status = document.getElementById('statusText');
@@ -641,7 +653,7 @@ create_monitor() {
     echo -e "${Y}[*] Menggunakan System Monitor (Linux Mode)...${RESET}"
     # Removed termux-api dependency
 
-    if [[ -f "index.html" ]]; then
+    if [[ -f "$WEB_DIR/index.html" ]]; then
         echo -e "${Y}[!] File index.html sudah ada.${RESET}"
         read -p " Timpa file? (y/n): " CONFIRM
         if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
@@ -653,7 +665,7 @@ create_monitor() {
     echo -e "${Y}[*] Membuat Dashboard Monitor Cyberpunk...${RESET}"
 
     # HTML MONITOR
-    cat > index.html << 'EOF_HTML'
+    cat > "$WEB_DIR/index.html" << 'EOF_HTML'
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -708,7 +720,7 @@ create_monitor() {
 EOF_HTML
 
     # CSS MONITOR
-    cat > style.css << 'EOF_CSS'
+    cat > "$WEB_DIR/style.css" << 'EOF_CSS'
 :root {
     --bg: #0a0a12;
     --card: #141420;
@@ -832,7 +844,7 @@ h1.glitch {
 EOF_CSS
 
     # JS MONITOR
-    cat > script.js << 'EOF_JS'
+    cat > "$WEB_DIR/script.js" << 'EOF_JS'
 const ctx = document.getElementById('cpuChart').getContext('2d');
 const cpuChart = new Chart(ctx, {
     type: 'line',
@@ -895,7 +907,7 @@ EOF_JS
 }
 
 create_anime_template() {
-    if [[ -f "index.html" ]]; then
+    if [[ -f "$WEB_DIR/index.html" ]]; then
         echo -e "${Y}[!] File index.html sudah ada.${RESET}"
         read -p " Timpa file? (y/n): " CONFIRM
         if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
@@ -907,7 +919,7 @@ create_anime_template() {
     echo -e "${Y}[*] Membuat Template Animasi Indonesia (Modern)...${RESET}"
 
     # HTML ANIME
-    cat > index.html << 'EOF_HTML'
+    cat > "$WEB_DIR/index.html" << 'EOF_HTML'
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -960,7 +972,7 @@ create_anime_template() {
 EOF_HTML
 
     # CSS ANIME
-    cat > style.css << 'EOF_CSS'
+    cat > "$WEB_DIR/style.css" << 'EOF_CSS'
 :root {
     --bg-dark: #090912;
     --card-bg: #151520;
@@ -1131,7 +1143,7 @@ h3#nowPlaying { padding: 15px; font-size: 1.1rem; }
 EOF_CSS
 
     # JS ANIME
-    cat > script.js << 'EOF_JS'
+    cat > "$WEB_DIR/script.js" << 'EOF_JS'
 const animeList = [
     {
         id: 'naruto',
@@ -1237,9 +1249,9 @@ input_custom_code() {
     read -p " Pilihan [1-3]: " TIPE_FILE
 
     case $TIPE_FILE in
-        1) TARGET="index.html"; NAME="HTML" ;;
-        2) TARGET="style.css"; NAME="CSS" ;;
-        3) TARGET="script.js"; NAME="JavaScript" ;;
+        1) TARGET="$WEB_DIR/index.html"; NAME="HTML" ;;
+        2) TARGET="$WEB_DIR/style.css"; NAME="CSS" ;;
+        3) TARGET="$WEB_DIR/script.js"; NAME="JavaScript" ;;
         *) echo -e "${R}Batal.${RESET}"; sleep 1; return ;;
     esac
 
@@ -1293,9 +1305,9 @@ manage_files() {
             3) create_monitor ;;
             4) create_anime_template ;;
             5) input_custom_code ;;
-            6) nano index.html || { echo "Nano tidak ditemukan, gunakan cat > index.html"; read -p "Tekan Enter"; } ;;
-            7) nano style.css || { echo "Nano tidak ditemukan"; read -p "Tekan Enter"; } ;;
-            8) nano script.js || { echo "Nano tidak ditemukan"; read -p "Tekan Enter"; } ;;
+            6) nano "$WEB_DIR/index.html" || { echo "Nano tidak ditemukan, gunakan cat > $WEB_DIR/index.html"; read -p "Tekan Enter"; } ;;
+            7) nano "$WEB_DIR/style.css" || { echo "Nano tidak ditemukan"; read -p "Tekan Enter"; } ;;
+            8) nano "$WEB_DIR/script.js" || { echo "Nano tidak ditemukan"; read -p "Tekan Enter"; } ;;
             9) break ;;
             *) echo -e "${R}Pilihan salah!${RESET}"; sleep 1 ;;
         esac
